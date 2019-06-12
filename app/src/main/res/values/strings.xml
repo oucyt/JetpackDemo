@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">JetpackDemo</string>
+    <string name="update_user">Update username</string>
+    <string name="query_user">查询</string>
 </resources>
