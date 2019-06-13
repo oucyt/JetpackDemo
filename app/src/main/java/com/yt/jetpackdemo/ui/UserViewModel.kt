@@ -5,6 +5,7 @@ import com.yt.jetpackdemo.persistence.User
 import com.yt.jetpackdemo.persistence.UserDao
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import java.util.*
 
 /**
  * description
@@ -60,7 +61,7 @@ class UserViewModel(private val dataSource: UserDao) : ViewModel() {
      * @return a [Completable] that completes when the user name is updated
      */
     fun updateUserName(userName: String): Completable {
-        val user = User(USER_ID, userName)
+        val user = User(USER_ID, userName, Date())
         return dataSource.insert(user)
     }
 

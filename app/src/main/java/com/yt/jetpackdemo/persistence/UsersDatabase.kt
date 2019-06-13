@@ -35,6 +35,19 @@ abstract class UsersDatabase : RoomDatabase() {
                 context.applicationContext,
                 UsersDatabase::class.java, "Sample.db"
             )
+//                .addMigrations((object : Migration(1, 2) {
+//                    override fun migrate(database: SupportSQLiteDatabase) {
+//                        // 升级
+////
+////                        database.execSQL("CREATE TABLE `second_table` (`id` INTEGER, "
+////                                + "`name` TEXT, PRIMARY KEY(`id`))")
+////
+////                        database.execSQL("alert table first_table "
+////                                + "add column age integer")
+//                    }
+//                }))
+//                .fallbackToDestructiveMigration()// 直接删除旧版本数据
                 .build()
+
     }
 }

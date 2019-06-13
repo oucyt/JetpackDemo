@@ -61,7 +61,7 @@ class MainActivity : AppCompatActivity() {
         // Subscribe to updating the user name.
         // Enable back the button once the user name has been updated
         val id = UUID.randomUUID().toString()
-        val user = User(id, "name:$id")
+        val user = User(id, "name:$id",Date())
         disposable.add(
             viewModel.insert(user)
                 .subscribeOn(Schedulers.io())

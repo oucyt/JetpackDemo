@@ -20,6 +20,16 @@ android {
 //                arg("room.schemaLocation", "$projectDir/schemas".toString())
 //            }
 //        }
+
+//        You must copy the schema json files (created by passing room.schemaLocation argument into the annotation processor) into your test assets and pass in the path for that folder into the constructor.
+//        This class will read the folder and extract the schemas from there.
+        // ⚠️⚠️⚠️
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = ["room.schemaLocation": "$projectDir/schemas".toString()]
+            }
+        }
+        // ⚠️⚠️⚠️
     }
     buildTypes {
         release {
@@ -27,6 +37,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    // ⚠️⚠️⚠️
+    sourceSets {
+        androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
+    }
+    // ⚠️⚠️⚠️
 
 ////////////////////不设置的话room框架会编译报错///////////////////////
 //    > Task :app:kaptDebugKotlin FAILED
@@ -42,7 +58,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.0.2'
     implementation 'androidx.core:core-ktx:1.0.2'
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
@@ -59,6 +74,7 @@ dependencies {
     implementation 'androidx.room:room-rxjava2:2.1.0-rc01'
     implementation 'androidx.room:room-common:2.1.0-rc01'
     implementation 'androidx.room:room-runtime:2.1.0-rc01'
+    implementation 'androidx.room:room-testing:2.1.0-rc01'
     kapt 'androidx.room:room-compiler:2.1.0-rc01'
 
 
@@ -72,4 +88,30 @@ dependencies {
 
 
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.46'
+
+
+    /*******测试*******/
+
+    // Dependencies for local unit tests
+    testImplementation "junit:junit:4.12"
+    testImplementation "org.mockito:mockito-all:1.10.19"
+    testImplementation "org.hamcrest:hamcrest-all:1.3"
+    testImplementation "androidx.arch.core:core-testing:2.0.1"
+    testImplementation "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    // Android Testing Support Library's runner and rules
+    androidTestImplementation "androidx.test:runner:1.2.0"
+    androidTestImplementation "androidx.test:rules:1.2.0"
+    androidTestImplementation "androidx.arch.core:core-testing:2.0.1"
+
+    // Dependencies for Android unit tests
+    androidTestImplementation "junit:junit:4.12"
+    androidTestImplementation "org.mockito:mockito-core:2.25.0", { exclude group: 'net.bytebuddy' }
+    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:2.2.0"
+
+    // Espresso UI Testing
+    androidTestImplementation "androidx.test.espresso:espresso-core:3.2.0"
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:3.2.0"
+    androidTestImplementation "androidx.test.espresso:espresso-intents:3.2.0"
 }
