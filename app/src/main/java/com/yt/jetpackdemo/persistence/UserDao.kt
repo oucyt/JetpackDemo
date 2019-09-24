@@ -12,7 +12,8 @@ import io.reactivex.Flowable
  * @since 1.0.0
  */
 /**
- * Data Access Object for the users table.
+ * 数据表的访问对象
+ * data access object for the users table.
  */
 @Dao
 interface UserDao {
@@ -40,10 +41,10 @@ interface UserDao {
     fun getUserCount(): Flowable<Int>
 
     @Delete
-    fun delete(user:User):Completable
+    fun delete(user: User): Completable
 
     @Update
-    fun update(user:User):Completable
+    fun update(user: User): Completable
 
     /**
      * Delete all users.

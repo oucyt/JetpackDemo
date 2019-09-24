@@ -9,7 +9,7 @@ import java.util.*
 
 /**
  * description
- *
+ * 定义一张表
  * @author tianyu
  * @create 2019.06.11 15:02
  * @since 1.0.0

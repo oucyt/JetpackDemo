@@ -29,6 +29,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="增"/>
+    <Button
+            android:id="@+id/btn_insert_coupon"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="新增餐券"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"

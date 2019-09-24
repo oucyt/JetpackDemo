@@ -15,10 +15,12 @@ import androidx.room.RoomDatabase
 /**
  * The Room database that contains the Users table
  */
-@Database(entities = arrayOf(User::class), version = 1, exportSchema = false)
+@Database(entities = arrayOf(User::class, MealCoupon::class), version = 1, exportSchema = false)
 abstract class UsersDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
+
+    abstract fun mealCouponDao(): MealCouponDao
 
     companion object {
 

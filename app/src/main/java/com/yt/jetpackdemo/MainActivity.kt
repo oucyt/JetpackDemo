@@ -6,7 +6,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.amitshekhar.DebugDB
 import com.chad.library.adapter.base.BaseQuickAdapter
+import com.yt.jetpackdemo.persistence.MealCoupon
 import com.yt.jetpackdemo.persistence.User
 import com.yt.jetpackdemo.ui.UserViewModel
 import com.yt.jetpackdemo.ui.ViewModelFactory
@@ -32,6 +34,7 @@ class MainActivity : AppCompatActivity() {
         viewModelFactory = Injection.provideViewModelFactory(this)
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserViewModel::class.java)
         initUI()
+        Log.e("数据库调试地址：", DebugDB.getAddressLog())
     }
 
     /**
@@ -40,7 +43,7 @@ class MainActivity : AppCompatActivity() {
     private fun initUI() {
         btn_refresh.setOnClickListener { queryUser() }
         btn_insert.setOnClickListener { insertUser() }
-
+        btn_insert_coupon.setOnClickListener { insertCoupon() }
         adapter = TestAdapter(android.R.layout.simple_expandable_list_item_2, null)
         adapter!!.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
             val user: User = adapter.getItem(position) as User
@@ -53,6 +56,27 @@ class MainActivity : AppCompatActivity() {
         recycler_view.adapter = adapter
     }
 
+    private fun insertCoupon() {
+
+        btn_insert_coupon.isEnabled = false
+
+        val id = UUID.randomUUID().toString()
+        val counts = Random().nextInt(5)
+        val roomNo = "A8009"
+
+        val coupon = MealCoupon(id, counts, roomNo, Date(), Date())
+
+        disposable.add(
+            viewModel.insertCoupon(coupon)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(
+                    { btn_insert_coupon.isEnabled = true },
+                    { error -> Log.e(TAG, "Unable to update username", error) })
+
+        )
+    }
+
     /**
      * 插入记录
      */
@@ -61,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         // Subscribe to updating the user name.
         // Enable back the button once the user name has been updated
         val id = UUID.randomUUID().toString()
-        val user = User(id, "name:$id",Date())
+        val user = User(id, "name:$id", Date())
         disposable.add(
             viewModel.insert(user)
                 .subscribeOn(Schedulers.io())
