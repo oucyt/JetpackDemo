@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amitshekhar.DebugDB
 import com.chad.library.adapter.base.BaseQuickAdapter
-import com.yt.jetpackdemo.persistence.MealCoupon
+import com.yt.jetpackdemo.persistence.BreakfastTicket
 import com.yt.jetpackdemo.persistence.User
 import com.yt.jetpackdemo.ui.UserViewModel
 import com.yt.jetpackdemo.ui.ViewModelFactory
@@ -43,7 +43,9 @@ class MainActivity : AppCompatActivity() {
     private fun initUI() {
         btn_refresh.setOnClickListener { queryUser() }
         btn_insert.setOnClickListener { insertUser() }
-        btn_insert_coupon.setOnClickListener { insertCoupon() }
+        btn_insert_ticket.setOnClickListener { insertTicket() }
+        btn_delete_all_ticket.setOnClickListener { deleleAllTicket() }
+        btn_query_ticket_by_room.setOnClickListener { queryTicketByRoom() }
         adapter = TestAdapter(android.R.layout.simple_expandable_list_item_2, null)
         adapter!!.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
             val user: User = adapter.getItem(position) as User
@@ -56,23 +58,51 @@ class MainActivity : AppCompatActivity() {
         recycler_view.adapter = adapter
     }
 
-    private fun insertCoupon() {
+    private fun queryTicketByRoom() {
+//        btn_query_ticket_by_room.isEnabled = false
+//        disposable.add(
+//            viewModel.queryTicketByRoom(et_input.text.toString())
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribe({
+//                    btn_query_ticket_by_room.isEnabled = true
+//                    Log.e(TAG, "查询结果：\n$it")
+//                }, { error ->
+//                    btn_query_ticket_by_room.isEnabled = true
+//                    Log.e(TAG, "Unable query breakfast ticket by roomNo", error)
+//                })
+//        )
+    }
 
-        btn_insert_coupon.isEnabled = false
+    private fun deleleAllTicket() {
+        disposable.add(
+            viewModel.deleteAllTicket()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    btn_delete_all_ticket.isEnabled = true
+                },
+                    { error -> Log.e(TAG, "Unable to delete all breakfast tickets", error) })
+        )
+    }
+
+    private fun insertTicket() {
+
+        btn_insert_ticket.isEnabled = false
 
         val id = UUID.randomUUID().toString()
         val counts = Random().nextInt(5)
-        val roomNo = "A8009"
+        val roomNo = "801"
 
-        val coupon = MealCoupon(id, counts, roomNo, Date(), Date())
+        val ticket = BreakfastTicket(id, counts, roomNo)
 
         disposable.add(
-            viewModel.insertCoupon(coupon)
+            viewModel.insertTicket(ticket)
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(
-                    { btn_insert_coupon.isEnabled = true },
-                    { error -> Log.e(TAG, "Unable to update username", error) })
+                    { btn_insert_ticket.isEnabled = true },
+                    { error -> Log.e(TAG, "Unable to insert ticket", error) })
 
         )
     }
@@ -171,7 +201,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun updateUserName() {
-        val userName = user_name_input.text.toString()
+        val userName = et_input.text.toString()
         // Disable the update button until the user name update has been done
         btn_insert.isEnabled = false
         // Subscribe to updating the user name.

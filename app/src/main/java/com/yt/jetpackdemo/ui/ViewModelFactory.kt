@@ -2,7 +2,7 @@ package com.yt.jetpackdemo.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.yt.jetpackdemo.persistence.MealCouponDao
+import com.yt.jetpackdemo.persistence.BreakfastTicketDao
 import com.yt.jetpackdemo.persistence.UserDao
 
 /**
@@ -16,7 +16,7 @@ import com.yt.jetpackdemo.persistence.UserDao
  */
 class ViewModelFactory(
     private val dataSource: UserDao,
-    private val couponSource: MealCouponDao
+    private val couponSource: BreakfastTicketDao
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {

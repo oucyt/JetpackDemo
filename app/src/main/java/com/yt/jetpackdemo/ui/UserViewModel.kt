@@ -1,8 +1,8 @@
 package com.yt.jetpackdemo.ui
 
 import androidx.lifecycle.ViewModel
-import com.yt.jetpackdemo.persistence.MealCoupon
-import com.yt.jetpackdemo.persistence.MealCouponDao
+import com.yt.jetpackdemo.persistence.BreakfastTicket
+import com.yt.jetpackdemo.persistence.BreakfastTicketDao
 import com.yt.jetpackdemo.persistence.User
 import com.yt.jetpackdemo.persistence.UserDao
 import io.reactivex.Completable
@@ -19,11 +19,19 @@ import java.util.*
 /**
  * View Model for the [UserActivity]
  */
-class UserViewModel(private val dataSource: UserDao, private val couponSource: MealCouponDao) : ViewModel() {
+class UserViewModel(private val dataSource: UserDao, private val ticketSource: BreakfastTicketDao) : ViewModel() {
 
 
-    fun insertCoupon(coupon: MealCoupon): Completable {
-        return couponSource.insert(coupon)
+    fun insertTicket(ticket: BreakfastTicket): Completable {
+        return ticketSource.insert(ticket)
+    }
+
+//    fun queryTicketByRoom(roomNo: String): Flowable<BreakfastTicket> {
+//     return   ticketSource.queryTicketByRoomNo(roomNo)
+//    }
+
+    fun deleteAllTicket(): Completable {
+        return ticketSource.deleteAll()
     }
 
     fun insert(user: User): Completable {
@@ -70,6 +78,7 @@ class UserViewModel(private val dataSource: UserDao, private val couponSource: M
         val user = User(USER_ID, userName, Date())
         return dataSource.insert(user)
     }
+
 
     companion object {
         // using a hardcoded value for simplicity

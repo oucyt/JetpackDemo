@@ -4,13 +4,14 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
+import com.yt.jetpackdemo.persistence.MyDatabase
 import com.yt.jetpackdemo.persistence.User
-import com.yt.jetpackdemo.persistence.UsersDatabase
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.*
 
 /**
  * description
@@ -28,7 +29,7 @@ class UserDaoTest {
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var database: UsersDatabase
+    private lateinit var database: MyDatabase
 
     @Before
     fun initDb() {
@@ -36,7 +37,7 @@ class UserDaoTest {
         // using an in-memory database because the information stored here disappears after test
         database = Room.inMemoryDatabaseBuilder(
             InstrumentationRegistry.getContext(),
-            UsersDatabase::class.java
+            MyDatabase::class.java
         )
             // 这个方法就是为了方便测试
             // allowing main thread queries, just for testing
@@ -71,7 +72,8 @@ class UserDaoTest {
         database.userDao().getUserById(USER.id)
             .test()
             // assertValue asserts that there was only one emission of the user
-            .assertValue { it.id == USER.id && it.userName == USER.userName }
+            .assertValue {
+                it.id == USER.id && it.userName == USER.userName }
     }
 
     /**
@@ -83,7 +85,7 @@ class UserDaoTest {
         database.userDao().insert(USER).blockingAwait()
 
         // When we are updating the name of the user
-        val updatedUser = User(USER.id, "new username")
+        val updatedUser = User(USER.id, "new username", Date())
         database.userDao().insert(updatedUser).blockingAwait()
 
         // When subscribing to the emissions of the user
@@ -111,6 +113,6 @@ class UserDaoTest {
     }
 
     companion object {
-        private val USER = User("id", "username")
+        private val USER = User("id", "username", Date())
     }
 }

@@ -1,9 +1,9 @@
 package com.yt.jetpackdemo
 
 import android.content.Context
-import com.yt.jetpackdemo.persistence.MealCouponDao
+import com.yt.jetpackdemo.persistence.BreakfastTicketDao
 import com.yt.jetpackdemo.persistence.UserDao
-import com.yt.jetpackdemo.persistence.UsersDatabase
+import com.yt.jetpackdemo.persistence.MyDatabase
 import com.yt.jetpackdemo.ui.ViewModelFactory
 
 /**
@@ -18,18 +18,18 @@ import com.yt.jetpackdemo.ui.ViewModelFactory
 object Injection {
 
     fun provideUserDataSource(context: Context): UserDao {
-        val database = UsersDatabase.getInstance(context)
+        val database = MyDatabase.getInstance(context)
         return database.userDao()
     }
 
-    private fun provideCouponDataSource(context: Context): MealCouponDao {
-        val database = UsersDatabase.getInstance(context)
-        return database.mealCouponDao()
+    private fun provideCouponDataSource(context: Context): BreakfastTicketDao {
+        val database = MyDatabase.getInstance(context)
+        return database.breakfastTicketDao()
     }
 
     fun provideViewModelFactory(context: Context): ViewModelFactory {
         val userSource = provideUserDataSource(context)
-        val couponSource: MealCouponDao = provideCouponDataSource(context)
+        val couponSource: BreakfastTicketDao = provideCouponDataSource(context)
         return ViewModelFactory(userSource, couponSource)
     }
 

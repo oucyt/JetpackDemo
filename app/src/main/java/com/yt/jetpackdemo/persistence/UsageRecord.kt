@@ -9,26 +9,38 @@ import java.util.*
 
 /**
  * description
- * 餐券表
+ * 使用记录
  * @author tianyu
  * @create 2019.06.11 15:02
  * @since 1.0.0
  */
-@Entity(tableName = "table_meal_coupon")
+@Entity(tableName = "table_usage_record")
 @TypeConverters(Converters::class)
-data class MealCoupon(
+data class UsageRecord(
     /**
-     * 入住 id,唯一
+     * id
      */
-    @PrimaryKey
-    @ColumnInfo(name = "checkinroom_id")
-    val checkinRoomId: String,
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    val id: Long,
 
     /**
-     * 餐券数量
+     * 核销人姓名
      */
-    @ColumnInfo(name = "counts")
-    var counts: Int,
+    @ColumnInfo(name = "name")
+    var name: String,
+
+    /**
+     * 核销人身份证
+     */
+    @ColumnInfo(name = "id_number")
+    var idNumber: String,
+
+    /**
+     * 现场照片
+     */
+    @ColumnInfo(name = "live_photo")
+    var livePhoto: String,
 
     /**
      * 房间号
@@ -37,8 +49,9 @@ data class MealCoupon(
     var roomNo: String,
 
     @ColumnInfo(name = "update_time")
-    var updateTime: Date,
+    var updateTime: Date = Date(),
 
     @ColumnInfo(name = "create_time")
-    var createTime: Date
+    var createTime: Date = Date()
 )
+

@@ -15,7 +15,7 @@
             android:textSize="15sp" tools:text="Hello World!"/>
 
     <EditText
-            android:id="@+id/user_name_input"
+            android:id="@+id/et_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 
@@ -30,10 +30,20 @@
             android:layout_height="wrap_content"
             android:text="增"/>
     <Button
-            android:id="@+id/btn_insert_coupon"
+            android:id="@+id/btn_insert_ticket"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="新增餐券"/>
+    <Button
+            android:id="@+id/btn_query_ticket_by_room"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="通过房间号查询餐券"/>
+    <Button
+            android:id="@+id/btn_delete_all_ticket"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="删除所有餐券"/>
 
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"

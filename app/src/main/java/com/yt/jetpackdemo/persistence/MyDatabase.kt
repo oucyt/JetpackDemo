@@ -15,19 +15,19 @@ import androidx.room.RoomDatabase
 /**
  * The Room database that contains the Users table
  */
-@Database(entities = arrayOf(User::class, MealCoupon::class), version = 1, exportSchema = false)
-abstract class UsersDatabase : RoomDatabase() {
+@Database(entities = [User::class, BreakfastTicket::class], version = 1, exportSchema = false)
+abstract class MyDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
 
-    abstract fun mealCouponDao(): MealCouponDao
+    abstract fun breakfastTicketDao(): BreakfastTicketDao
 
     companion object {
 
         @Volatile
-        private var INSTANCE: UsersDatabase? = null
+        private var INSTANCE: MyDatabase? = null
 
-        fun getInstance(context: Context): UsersDatabase =
+        fun getInstance(context: Context): MyDatabase =
             INSTANCE ?: synchronized(this) {
                 INSTANCE ?: buildDatabase(context).also { INSTANCE = it }
             }
@@ -35,7 +35,7 @@ abstract class UsersDatabase : RoomDatabase() {
         private fun buildDatabase(context: Context) =
             Room.databaseBuilder(
                 context.applicationContext,
-                UsersDatabase::class.java, "Sample.db"
+                MyDatabase::class.java, "Sample.db"
             )
 //                .addMigrations((object : Migration(1, 2) {
 //                    override fun migrate(database: SupportSQLiteDatabase) {
