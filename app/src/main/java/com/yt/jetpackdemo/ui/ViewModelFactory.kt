@@ -3,6 +3,7 @@ package com.yt.jetpackdemo.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.yt.jetpackdemo.persistence.BreakfastTicketDao
+import com.yt.jetpackdemo.persistence.UsageRecordDao
 import com.yt.jetpackdemo.persistence.UserDao
 
 /**
@@ -16,12 +17,13 @@ import com.yt.jetpackdemo.persistence.UserDao
  */
 class ViewModelFactory(
     private val dataSource: UserDao,
-    private val couponSource: BreakfastTicketDao
+    private val breakfastTicketDao: BreakfastTicketDao,
+    private val usageRecordDao:  UsageRecordDao
 ) : ViewModelProvider.Factory {
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(UserViewModel::class.java)) {
-            return UserViewModel(dataSource,couponSource) as T
+            return UserViewModel(dataSource,breakfastTicketDao,usageRecordDao) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

@@ -22,7 +22,7 @@ data class UsageRecord(
      */
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
-    val id: Long,
+    val id: Int,
 
     /**
      * 核销人姓名
@@ -48,10 +48,27 @@ data class UsageRecord(
     @ColumnInfo(name = "room_no")
     var roomNo: String,
 
+    /**
+     * 房间号
+     */
+    @ColumnInfo(name = "cuserroomdayid")
+    var cuserRoomDayId: String,
+
+    /**
+     * 是否已上传
+     */
+    @ColumnInfo(name = "is_upload")
+    var isUpload: Boolean,
+
+
     @ColumnInfo(name = "update_time")
     var updateTime: Date = Date(),
 
     @ColumnInfo(name = "create_time")
     var createTime: Date = Date()
-)
+) {
+    constructor(
+        id: Int, name: String, idNumber: String, livePhoto: String, roomNo: String, cuserRoomDayId: String
 
+    ) : this(id, name, idNumber, livePhoto, roomNo, cuserRoomDayId, false, Date(), Date())
+}

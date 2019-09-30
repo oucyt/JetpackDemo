@@ -2,8 +2,9 @@ package com.yt.jetpackdemo
 
 import android.content.Context
 import com.yt.jetpackdemo.persistence.BreakfastTicketDao
-import com.yt.jetpackdemo.persistence.UserDao
 import com.yt.jetpackdemo.persistence.MyDatabase
+import com.yt.jetpackdemo.persistence.UsageRecordDao
+import com.yt.jetpackdemo.persistence.UserDao
 import com.yt.jetpackdemo.ui.ViewModelFactory
 
 /**
@@ -22,15 +23,21 @@ object Injection {
         return database.userDao()
     }
 
-    private fun provideCouponDataSource(context: Context): BreakfastTicketDao {
+    private fun provideTicketDataSource(context: Context): BreakfastTicketDao {
         val database = MyDatabase.getInstance(context)
         return database.breakfastTicketDao()
     }
 
+    private fun provideRecordDataSource(context: Context): UsageRecordDao {
+        val database = MyDatabase.getInstance(context)
+        return database.usageRecordDao()
+    }
+
     fun provideViewModelFactory(context: Context): ViewModelFactory {
         val userSource = provideUserDataSource(context)
-        val couponSource: BreakfastTicketDao = provideCouponDataSource(context)
-        return ViewModelFactory(userSource, couponSource)
+        val breakfastTicketDao = provideTicketDataSource(context)
+        val usageRecordDao = provideRecordDataSource(context)
+        return ViewModelFactory(userSource, breakfastTicketDao, usageRecordDao)
     }
 
 }

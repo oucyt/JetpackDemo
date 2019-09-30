@@ -1,12 +1,10 @@
 package com.yt.jetpackdemo.ui
 
 import androidx.lifecycle.ViewModel
-import com.yt.jetpackdemo.persistence.BreakfastTicket
-import com.yt.jetpackdemo.persistence.BreakfastTicketDao
-import com.yt.jetpackdemo.persistence.User
-import com.yt.jetpackdemo.persistence.UserDao
+import com.yt.jetpackdemo.persistence.*
 import io.reactivex.Completable
 import io.reactivex.Flowable
+import io.reactivex.Maybe
 import java.util.*
 
 /**
@@ -19,16 +17,20 @@ import java.util.*
 /**
  * View Model for the [UserActivity]
  */
-class UserViewModel(private val dataSource: UserDao, private val ticketSource: BreakfastTicketDao) : ViewModel() {
+class UserViewModel(
+    private val dataSource: UserDao,
+    private val ticketSource: BreakfastTicketDao,
+    private val usageRecordDao: UsageRecordDao
+) : ViewModel() {
 
 
     fun insertTicket(ticket: BreakfastTicket): Completable {
         return ticketSource.insert(ticket)
     }
 
-//    fun queryTicketByRoom(roomNo: String): Flowable<BreakfastTicket> {
-//     return   ticketSource.queryTicketByRoomNo(roomNo)
-//    }
+    fun queryTicketByRoom(roomNo: String): Maybe<BreakfastTicket> {
+        return ticketSource.queryTicketByRoomNo(roomNo, 0L, 1569728011055)
+    }
 
     fun deleteAllTicket(): Completable {
         return ticketSource.deleteAll()
@@ -36,6 +38,11 @@ class UserViewModel(private val dataSource: UserDao, private val ticketSource: B
 
     fun insert(user: User): Completable {
         return dataSource.insert(user)
+    }
+
+
+    fun insertRecord(usage: UsageRecord): Completable {
+        return usageRecordDao.insert(usage)
     }
 
 
@@ -77,6 +84,10 @@ class UserViewModel(private val dataSource: UserDao, private val ticketSource: B
     fun updateUserName(userName: String): Completable {
         val user = User(USER_ID, userName, Date())
         return dataSource.insert(user)
+    }
+
+    fun testGroupBy(): Maybe<List<String>> {
+        return usageRecordDao.testOne()
     }
 
 

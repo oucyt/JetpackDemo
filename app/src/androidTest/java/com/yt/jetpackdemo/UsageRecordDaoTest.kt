@@ -5,22 +5,23 @@ import androidx.room.Room
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
 import com.yt.jetpackdemo.persistence.MyDatabase
+import com.yt.jetpackdemo.persistence.UsageRecord
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
 
 /**
  * description
  *
  * @author tianyu
- * @create 2019.09.25 11:52
+ * @create 2019.09.29 16:10
  * @since 1.0.0
  */
+
 @RunWith(AndroidJUnit4::class)
-class BreakfastTicketDaoTest {
+class UsageRecordDaoTest {
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -46,43 +47,61 @@ class BreakfastTicketDaoTest {
         database.close()
     }
 
-    /**
-     * 用例：查询不存在的房间号对应的餐券
-     */
-    @Test
-    fun getTicketsWhenNoTicketInsert() {
-        database.breakfastTicketDao()
-            .queryTicketByRoomNo("123", Date().time, Date().time)
-            .test()
-//            .assertComplete() // 失败
-//            .assertEmpty() // 通过
-//            .assertNoErrors() // 通过
-//            .assertNoValues()
-    }
 
-    /**
-     * 用例：查询已存在的房间号对应的餐券
-     */
     @Test
-    fun insertAndGetTicket() {
-        // 插入一条记录
-        database.breakfastTicketDao()
-            .insert(breakfastTicket)
-            .blockingAwait()
+    fun getWhenInsert() {
 
         var start = DateHelper.getToday0Clock().time
         var end = DateHelper.getToday24Clock().time
-        database.breakfastTicketDao()
-            .queryTicketByRoomNo(breakfastTicket.roomNo, start, end)
+        database.usageRecordDao()
+            .queryUsageRecordByIdNumber("123", start, end)
+            .test()
+            .assertNoValues()
+    }
+
+
+    @Test
+    fun insertAndGet(){
+
+        database.usageRecordDao()
+            .insert(usageRecord)
+            .blockingAwait()
+//
+//        database.usageRecordDao()
+//            .update(usageRecord)
+//            .blockingAwait()
+
+        var start = DateHelper.getToday0Clock().time
+        var end = DateHelper.getToday24Clock().time
+
+        database.usageRecordDao()
+            .queryUsageRecordByIdNumber("idCard",start,end)
             .test()
             .assertValue {
-                it.checkinRoomId == breakfastTicket.checkinRoomId
-                        && it.counts == breakfastTicket.counts
-                        && it.roomNo == breakfastTicket.roomNo
+                it.roomNo == usageRecord.roomNo && !it.isUpload
             }
     }
 
+    @Test
+    fun testGroupBy(){
+
+        database.usageRecordDao()
+            .insert(usageRecord)
+            .blockingAwait()
+        database.usageRecordDao()
+            .insert(usageRecord)
+            .blockingAwait()
+
+        database.usageRecordDao()
+            .testOne()
+            .test()
+            .assertValue {
+                it.size==2
+            }
+
+    }
+
     companion object {
-        private val breakfastTicket = com.yt.jetpackdemo.persistence.BreakfastTicket("checkinroomid", 2, "101")
+        private val usageRecord = UsageRecord(0,"name","idCard","livePhoto", "roomNo","curserRoomDayId")
     }
 }

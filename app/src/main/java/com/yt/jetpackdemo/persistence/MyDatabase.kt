@@ -15,12 +15,14 @@ import androidx.room.RoomDatabase
 /**
  * The Room database that contains the Users table
  */
-@Database(entities = [User::class, BreakfastTicket::class], version = 1, exportSchema = false)
+@Database(entities = [User::class, BreakfastTicket::class, UsageRecord::class], version = 1, exportSchema = false)
 abstract class MyDatabase : RoomDatabase() {
 
     abstract fun userDao(): UserDao
 
     abstract fun breakfastTicketDao(): BreakfastTicketDao
+
+    abstract fun usageRecordDao(): UsageRecordDao
 
     companion object {
 

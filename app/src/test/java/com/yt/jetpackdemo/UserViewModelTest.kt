@@ -2,6 +2,7 @@ package com.yt.jetpackdemo
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.yt.jetpackdemo.persistence.BreakfastTicketDao
+import com.yt.jetpackdemo.persistence.UsageRecordDao
 import com.yt.jetpackdemo.persistence.User
 import com.yt.jetpackdemo.persistence.UserDao
 import com.yt.jetpackdemo.ui.UserViewModel
@@ -37,6 +38,8 @@ class UserViewModelTest {
 
     @MockitoAnnotations.Mock
     private lateinit var ticketSource: BreakfastTicketDao
+    @MockitoAnnotations.Mock
+    private lateinit var recordSource: UsageRecordDao
 
     @Captor
     private lateinit var userArgumentCaptor: ArgumentCaptor<User>
@@ -47,7 +50,7 @@ class UserViewModelTest {
     fun setUp() {
         MockitoAnnotations.initMocks(this)
 
-        viewModel = UserViewModel(dataSource,ticketSource)
+        viewModel = UserViewModel(dataSource, ticketSource, recordSource)
     }
 
     /**

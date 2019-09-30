@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.amitshekhar.DebugDB
 import com.chad.library.adapter.base.BaseQuickAdapter
 import com.yt.jetpackdemo.persistence.BreakfastTicket
+import com.yt.jetpackdemo.persistence.UsageRecord
 import com.yt.jetpackdemo.persistence.User
 import com.yt.jetpackdemo.ui.UserViewModel
 import com.yt.jetpackdemo.ui.ViewModelFactory
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         viewModelFactory = Injection.provideViewModelFactory(this)
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserViewModel::class.java)
         initUI()
-        Log.e("数据库调试地址：", DebugDB.getAddressLog())
+        Log.e(TAG, "数据库调试地址：" + DebugDB.getAddressLog())
     }
 
     /**
@@ -44,8 +45,10 @@ class MainActivity : AppCompatActivity() {
         btn_refresh.setOnClickListener { queryUser() }
         btn_insert.setOnClickListener { insertUser() }
         btn_insert_ticket.setOnClickListener { insertTicket() }
-        btn_delete_all_ticket.setOnClickListener { deleleAllTicket() }
+        btn_delete_all_ticket.setOnClickListener { deleteAllTicket() }
         btn_query_ticket_by_room.setOnClickListener { queryTicketByRoom() }
+        btn_insert_record.setOnClickListener { insertRecord() }
+        btn_test_group_by.setOnClickListener { testGroupBy() }
         adapter = TestAdapter(android.R.layout.simple_expandable_list_item_2, null)
         adapter!!.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
             val user: User = adapter.getItem(position) as User
@@ -58,23 +61,54 @@ class MainActivity : AppCompatActivity() {
         recycler_view.adapter = adapter
     }
 
-    private fun queryTicketByRoom() {
-//        btn_query_ticket_by_room.isEnabled = false
-//        disposable.add(
-//            viewModel.queryTicketByRoom(et_input.text.toString())
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe({
-//                    btn_query_ticket_by_room.isEnabled = true
-//                    Log.e(TAG, "查询结果：\n$it")
-//                }, { error ->
-//                    btn_query_ticket_by_room.isEnabled = true
-//                    Log.e(TAG, "Unable query breakfast ticket by roomNo", error)
-//                })
-//        )
+    private fun testGroupBy() {
+        disposable.add(
+            viewModel.testGroupBy()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Log.e(TAG, "成功:$it")
+                }, {
+                    Log.e(TAG, "插入记录失败", it)
+                })
+        )
     }
 
-    private fun deleleAllTicket() {
+    private fun insertRecord() {
+        var name = "name"+System.currentTimeMillis()
+        var usage = UsageRecord(0, name, "dd", "ddd", "dd", "ddd")
+        disposable.add(
+            viewModel.insertRecord(usage)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    Log.e(TAG, "成功")
+                }, {
+                    Log.e(TAG, "插入记录失败", it)
+                })
+        )
+    }
+
+    private fun queryTicketByRoom() {
+        btn_query_ticket_by_room.isEnabled = false
+        disposable.add(
+            viewModel.queryTicketByRoom(et_input.text.toString())
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    btn_query_ticket_by_room.isEnabled = true
+                    Log.e(TAG, "查询结果：\n$it")
+                }, { error ->
+                    btn_query_ticket_by_room.isEnabled = true
+                    Log.e(TAG, "Unable query breakfast ticket by roomNo", error)
+                }, {
+                    btn_query_ticket_by_room.isEnabled = true
+                    Log.e(TAG, "onComplete")
+                })
+        )
+    }
+
+    private fun deleteAllTicket() {
         disposable.add(
             viewModel.deleteAllTicket()
                 .subscribeOn(Schedulers.io())

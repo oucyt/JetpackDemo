@@ -20,13 +20,12 @@ interface BreakfastTicketDao {
     @Insert
     fun insert(breakfastTicket: BreakfastTicket): Completable
 
-    @Query("SELECT * FROM table_breakfast_ticket WHERE room_no = :roomNo  LIMIT 1")
-    fun queryTicketByRoomNo(roomNo: String):  Maybe<BreakfastTicket>
+    @Query("SELECT * FROM table_breakfast_ticket WHERE room_no = :roomNo AND counts > 0  AND create_time >= :start AND create_time <= :end LIMIT 1")
+    fun queryTicketByRoomNo(roomNo: String, start: Long, end: Long): Maybe<BreakfastTicket>
 
 
     @Query("DELETE FROM table_breakfast_ticket WHERE room_no = :roomNo")
     fun deleteTicketByRoomNo(roomNo: String): Completable
-
 
     @Delete
     fun delete(coupon: BreakfastTicket): Completable
