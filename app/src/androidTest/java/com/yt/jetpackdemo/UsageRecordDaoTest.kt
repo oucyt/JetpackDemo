@@ -5,7 +5,6 @@ import androidx.room.Room
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
 import com.yt.jetpackdemo.persistence.MyDatabase
-import com.yt.jetpackdemo.persistence.UsageRecord
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule

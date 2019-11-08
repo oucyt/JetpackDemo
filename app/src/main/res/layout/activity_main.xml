@@ -9,52 +9,34 @@
               android:orientation="vertical">
 
     <TextView
-            android:id="@+id/tv_db"
+            android:id="@+id/tv_console"
             android:layout_width="match_parent"
+            tools:text="aaabccdd"
             android:layout_height="wrap_content"
-            android:textSize="15sp" tools:text="Hello World!"/>
+            android:textSize="15sp"/>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content">
 
-    <EditText
-            android:id="@+id/et_input"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+
+        <EditText
+                android:id="@+id/et_input"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+
+        <Button
+                android:id="@+id/btn_insert"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="新增记录"/>
+
+    </LinearLayout>
 
     <Button
             android:id="@+id/btn_refresh"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="刷新"/>
-    <Button
-            android:id="@+id/btn_insert"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="增"/>
-    <Button
-            android:id="@+id/btn_insert_ticket"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="新增餐券"/>
-    <Button
-            android:id="@+id/btn_query_ticket_by_room"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="通过房间号查询餐券"/>
-    <Button
-            android:id="@+id/btn_delete_all_ticket"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="删除所有餐券"/>
-    <Button
-            android:id="@+id/btn_insert_record"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="新增一条使用记录"/>
-    <Button
-            android:id="@+id/btn_test_group_by"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="group by 测试"/>
-
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"

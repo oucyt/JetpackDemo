@@ -2,19 +2,18 @@ package com.yt.jetpackdemo
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.amitshekhar.DebugDB
 import com.chad.library.adapter.base.BaseQuickAdapter
-import com.yt.jetpackdemo.persistence.BreakfastTicket
-import com.yt.jetpackdemo.persistence.UsageRecord
 import com.yt.jetpackdemo.persistence.User
 import com.yt.jetpackdemo.ui.UserViewModel
 import com.yt.jetpackdemo.ui.ViewModelFactory
+import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -26,8 +25,6 @@ class MainActivity : AppCompatActivity() {
 
     private var adapter: TestAdapter? = null
 
-    private val disposable = CompositeDisposable()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -35,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         viewModelFactory = Injection.provideViewModelFactory(this)
         viewModel = ViewModelProviders.of(this, viewModelFactory).get(UserViewModel::class.java)
         initUI()
+        queryUser()
         Log.e(TAG, "数据库调试地址：" + DebugDB.getAddressLog())
     }
 
@@ -44,173 +42,130 @@ class MainActivity : AppCompatActivity() {
     private fun initUI() {
         btn_refresh.setOnClickListener { queryUser() }
         btn_insert.setOnClickListener { insertUser() }
-        btn_insert_ticket.setOnClickListener { insertTicket() }
-        btn_delete_all_ticket.setOnClickListener { deleteAllTicket() }
-        btn_query_ticket_by_room.setOnClickListener { queryTicketByRoom() }
-        btn_insert_record.setOnClickListener { insertRecord() }
-        btn_test_group_by.setOnClickListener { testGroupBy() }
-        adapter = TestAdapter(android.R.layout.simple_expandable_list_item_2, null)
-        adapter!!.onItemClickListener = BaseQuickAdapter.OnItemClickListener { adapter, view, position ->
+        adapter = TestAdapter(R.layout.item_user, null)
+
+        adapter!!.onItemChildClickListener = BaseQuickAdapter.OnItemChildClickListener { adapter, view, position ->
             val user: User = adapter.getItem(position) as User
-//            deleteUser(user)
-            updateUser(user)
+            when (view.id) {
+                R.id.btn_update -> {
+                    var etName = adapter.getViewByPosition(position, R.id.et_name) as EditText;
+                    var etAge = adapter.getViewByPosition(position, R.id.et_age) as EditText;
+                    user.userName = etName.text.toString()
+                    user.age = Integer.parseInt(etAge.text.toString())
+                    updateUser(user)
+                }
+                R.id.btn_delete -> deleteUser(user)
+            }
         }
         val manager = LinearLayoutManager(this)
         manager.orientation = RecyclerView.VERTICAL
         recycler_view.layoutManager = manager
         recycler_view.adapter = adapter
-    }
-
-    private fun testGroupBy() {
-        disposable.add(
-            viewModel.testGroupBy()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Log.e(TAG, "成功:$it")
-                }, {
-                    Log.e(TAG, "插入记录失败", it)
-                })
-        )
-    }
-
-    private fun insertRecord() {
-        var name = "name"+System.currentTimeMillis()
-        var usage = UsageRecord(0, name, "dd", "ddd", "dd", "ddd")
-        disposable.add(
-            viewModel.insertRecord(usage)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    Log.e(TAG, "成功")
-                }, {
-                    Log.e(TAG, "插入记录失败", it)
-                })
-        )
-    }
-
-    private fun queryTicketByRoom() {
-        btn_query_ticket_by_room.isEnabled = false
-        disposable.add(
-            viewModel.queryTicketByRoom(et_input.text.toString())
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    btn_query_ticket_by_room.isEnabled = true
-                    Log.e(TAG, "查询结果：\n$it")
-                }, { error ->
-                    btn_query_ticket_by_room.isEnabled = true
-                    Log.e(TAG, "Unable query breakfast ticket by roomNo", error)
-                }, {
-                    btn_query_ticket_by_room.isEnabled = true
-                    Log.e(TAG, "onComplete")
-                })
-        )
-    }
-
-    private fun deleteAllTicket() {
-        disposable.add(
-            viewModel.deleteAllTicket()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    btn_delete_all_ticket.isEnabled = true
-                },
-                    { error -> Log.e(TAG, "Unable to delete all breakfast tickets", error) })
-        )
-    }
-
-    private fun insertTicket() {
-
-        btn_insert_ticket.isEnabled = false
-
-        val id = UUID.randomUUID().toString()
-        val counts = Random().nextInt(5)
-        val roomNo = "801"
-
-        val ticket = BreakfastTicket(id, counts, roomNo)
-
-        disposable.add(
-            viewModel.insertTicket(ticket)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { btn_insert_ticket.isEnabled = true },
-                    { error -> Log.e(TAG, "Unable to insert ticket", error) })
-
-        )
+        adapter!!.bindToRecyclerView(recycler_view)
     }
 
     /**
      * 插入记录
      */
     private fun insertUser() {
+        if (et_input.text.isNullOrEmpty())
+            return
+
         btn_insert.isEnabled = false
-        // Subscribe to updating the user name.
-        // Enable back the button once the user name has been updated
         val id = UUID.randomUUID().toString()
-        val user = User(id, "name:$id", Date())
-        disposable.add(
-            viewModel.insert(user)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    { btn_insert.isEnabled = true },
-                    { error -> Log.e(TAG, "Unable to update username", error) })
-        )
+        val user = User(id, et_input.text.toString(), Random().nextInt(99))
+
+//        viewModel.insert(user)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe(
+//                {
+//                    btn_insert.isEnabled = true
+//                    queryUser()
+//                },
+//                { error ->
+//                    //                    Log.e(TAG, "Unable to update username", error)
+//                    tv_console.text = "异常：${error.message}"
+//                })
+
+
+        Flowable.fromPublisher<Long> {
+            it.onNext(viewModel.insert2(user))
+        }
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    btn_insert.isEnabled = true
+                    tv_console.text = "返回值：${it}"
+                    queryUser()
+                },
+                { error ->
+                    btn_insert.isEnabled = true
+                    tv_console.text = "异常：${error.message}"
+                })
     }
 
     /**
      * 查询
      */
     private fun queryUser() {
-        btn_refresh.isEnabled = false
-        // Subscribe to updating the user name.
-        // Enable back the button once the user name has been updated
-        disposable.add(
-            viewModel.userCount()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    btn_refresh.isEnabled = true
-                    tv_db.text = "总记录:$it"
-                },
-                    { error -> Log.e(TAG, "Unable to update username", error) })
-        )
-        disposable.add(
-            viewModel.queryAll()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if (adapter != null) {
-                        adapter!!.setNewData(it)
-                    }
-                },
-                    { error -> Log.e(TAG, "Unable to update username", error) })
-        )
+        viewModel.queryAll()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (adapter != null) {
+                    adapter!!.setNewData(it)
+                }
+            },
+                { error ->
+                    Log.e(TAG, "Unable to update username", error)
+                })
     }
+
+
+    private fun updateUser(user: User) {
+//        viewModel.update(user)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({}, { error -> Log.e(TAG, "dd", error) })
+        var newUser = user.copy(id = "999")
+        Flowable.fromPublisher<Int> {
+            it.onNext(viewModel.update2(newUser))
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    tv_console.text = "影响记录条数：${it}"
+                    queryUser()
+                },
+                { error ->
+                    tv_console.text = "异常：${error.message}"
+                })
+    }
+
 
     /**
      * 删除
      */
     private fun deleteUser(user: User) {
-        disposable.add(
-            viewModel.delete(user)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({}, { error -> Log.e(TAG, "dd", error) })
-        )
-    }
+//        viewModel.delete(user)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({}, { error -> Log.e(TAG, "dd", error) })
 
-    private fun updateUser(user: User) {
-        user.userName = "NNNNNN"
-        disposable.add(
-            viewModel.update(user)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({}, { error -> Log.e(TAG, "dd", error) })
-
-        )
+        Flowable.fromPublisher<Int> {
+            it.onNext(viewModel.delete2(user))
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                {
+                    tv_console.text = "影响记录条数：${it}"
+                    queryUser()
+                },
+                { error ->
+                    tv_console.text = "异常：${error.message}"
+                })
     }
 
     override fun onStart() {
@@ -218,20 +173,17 @@ class MainActivity : AppCompatActivity() {
         // Subscribe to the emissions of the user name from the view model.
         // Update the user name text view, at every onNext emission.
         // In case of error, log the exception.
-        disposable.add(
-            viewModel.userName()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ this.tv_db.text = it },
-                    { error -> Log.e(TAG, "Unable to get username", error) })
-        )
+//        viewModel.userName()
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({ this.tv_db.text = it },
+//                { error -> Log.e(TAG, "Unable to get username", error) })
     }
 
     override fun onStop() {
         super.onStop()
 
         // clear all the subscription
-        disposable.clear()
     }
 
     private fun updateUserName() {
@@ -240,31 +192,12 @@ class MainActivity : AppCompatActivity() {
         btn_insert.isEnabled = false
         // Subscribe to updating the user name.
         // Enable back the button once the user name has been updated
-        disposable.add(
-            viewModel.updateUserName(userName)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ btn_insert.isEnabled = true },
-                    { error -> Log.e(TAG, "Unable to update username", error) })
-        )
+//        viewModel.updateUserName(userName)
+//            .subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe({ btn_insert.isEnabled = true },
+//                { error -> Log.e(TAG, "Unable to update username", error) })
     }
-
-//    private fun showPop() {
-//        val view = LayoutInflater.from(this).inflate(android.R.layout.simple_list_item_1, null)
-//        view.setBackgroundColor(Color.BLACK)
-//        val textView = view.findViewById<TextView>(android.R.id.text1)
-//        textView.setTextColor(Color.WHITE)
-//        textView.text = "HHHHH"
-//        val pop =
-//            PopupWindow(view, LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT, true)
-//        view.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED)
-//        pop.showAtLocation(
-//            btn_refresh,
-//            Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-//            , 0, 0
-//        )
-//
-//    }
 
 
     companion object {

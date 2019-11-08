@@ -23,7 +23,11 @@ data class User(
 
     @ColumnInfo(name = "username")
     var userName: String,
+    @ColumnInfo(name = "age")
+    var age: Int
+
+) {
 
     @ColumnInfo(name = "updatetime")
-    var updateTime: Date
-)
+    var updateTime: Date = Date()
+}

@@ -22,16 +22,13 @@ public class TestAdapter extends BaseQuickAdapter<User, BaseViewHolder> {
         super(layoutResId, data);
     }
 
-    //
-//    public TestAdapter(List<User> users) {
-//        this.users = users;
-//    }
-//
     @Override
     protected void convert(BaseViewHolder helper, User item) {
 
-        helper.setText(android.R.id.text1, item.getId() + "")
-                .setText(android.R.id.text2, item.getUserName());
+        helper.setText(R.id.et_name, item.getUserName() + "")
+                .setText(R.id.et_age, item.getAge() + "")
+                .addOnClickListener(R.id.btn_update)
+                .addOnClickListener(R.id.btn_delete);
     }
 
 }

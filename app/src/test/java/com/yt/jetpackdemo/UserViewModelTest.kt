@@ -1,8 +1,6 @@
 package com.yt.jetpackdemo
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.yt.jetpackdemo.persistence.BreakfastTicketDao
-import com.yt.jetpackdemo.persistence.UsageRecordDao
 import com.yt.jetpackdemo.persistence.User
 import com.yt.jetpackdemo.persistence.UserDao
 import com.yt.jetpackdemo.ui.UserViewModel

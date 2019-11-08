@@ -1,11 +1,10 @@
 package com.yt.jetpackdemo.ui
 
 import androidx.lifecycle.ViewModel
-import com.yt.jetpackdemo.persistence.*
+import com.yt.jetpackdemo.persistence.User
+import com.yt.jetpackdemo.persistence.UserDao
 import io.reactivex.Completable
 import io.reactivex.Flowable
-import io.reactivex.Maybe
-import java.util.*
 
 /**
  * description
@@ -18,32 +17,19 @@ import java.util.*
  * View Model for the [UserActivity]
  */
 class UserViewModel(
-    private val dataSource: UserDao,
-    private val ticketSource: BreakfastTicketDao,
-    private val usageRecordDao: UsageRecordDao
+    private val dataSource: UserDao
 ) : ViewModel() {
 
-
-    fun insertTicket(ticket: BreakfastTicket): Completable {
-        return ticketSource.insert(ticket)
-    }
-
-    fun queryTicketByRoom(roomNo: String): Maybe<BreakfastTicket> {
-        return ticketSource.queryTicketByRoomNo(roomNo, 0L, 1569728011055)
-    }
-
-    fun deleteAllTicket(): Completable {
-        return ticketSource.deleteAll()
-    }
 
     fun insert(user: User): Completable {
         return dataSource.insert(user)
     }
 
 
-    fun insertRecord(usage: UsageRecord): Completable {
-        return usageRecordDao.insert(usage)
+    fun insert2(user: User): Long {
+        return dataSource.insert2(user)
     }
+
 
 
     fun queryAll(): Flowable<List<User>> {
@@ -52,6 +38,9 @@ class UserViewModel(
 
     fun delete(user: User): Completable {
         return dataSource.delete(user)
+    }
+    fun delete2(user: User): Int {
+        return dataSource.delete2(user)
     }
 
     fun update(user: User): Completable {
@@ -75,20 +64,20 @@ class UserViewModel(
             .map { user -> user.userName }
     }
 
+    fun update2(user: User): Int {
+        return dataSource.update2(user)
+    }
+
     /**
      * Update the user name.
      * @param userName the new user name
      * *
      * @return a [Completable] that completes when the user name is updated
      */
-    fun updateUserName(userName: String): Completable {
-        val user = User(USER_ID, userName, Date())
-        return dataSource.insert(user)
-    }
-
-    fun testGroupBy(): Maybe<List<String>> {
-        return usageRecordDao.testOne()
-    }
+//    fun updateUserName(userName: String): Completable {
+//        val user = User(USER_ID, userName, Date())
+//        return dataSource.insert(user)
+//    }
 
 
     companion object {
